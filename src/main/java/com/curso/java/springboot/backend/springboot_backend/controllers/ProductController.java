@@ -18,18 +18,33 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
+
+// Controlador REST para gestionar productos
 public class ProductController {
+    // Servicio que maneja la lógica de negocio de productos
     final private ProductService service;
 
+    // Constructor que inyecta el servicio de productos
     public ProductController(ProductService service) {
         this.service = service;
     }
 
+    /**
+     * Obtiene la lista de todos los productos.
+     * 
+     * @return ResponseEntity con la lista de productos y estado 200 OK
+     */
     @GetMapping
     public ResponseEntity<List<Product>> list() {
         return ResponseEntity.ok(service.findAll());
     }
 
+    /**
+     * Obtiene los detalles de un producto por su id.
+     * 
+     * @param id identificador del producto
+     * @return ResponseEntity con el producto encontrado o 404 si no existe
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Product> details(@PathVariable Long id) {
         Optional<Product> optionalProduct = service.findById(id);
@@ -37,14 +52,26 @@ public class ProductController {
             return ResponseEntity.ok(optionalProduct.orElseThrow());
         }
         return ResponseEntity.notFound().build();
-
     }
 
+    /**
+     * Crea un nuevo producto.
+     * 
+     * @param product objeto producto recibido en el cuerpo de la petición
+     * @return ResponseEntity con el producto creado y estado 201 CREATED
+     */
     @PostMapping
     public ResponseEntity<Product> create(@RequestBody Product product) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.save(product));
     }
 
+    /**
+     * Actualiza un producto existente por su id.
+     * 
+     * @param product objeto producto con los nuevos datos
+     * @param id      identificador del producto a actualizar
+     * @return ResponseEntity con el producto actualizado o 404 si no existe
+     */
     @PutMapping("/{id}")
     public ResponseEntity<Product> update(@RequestBody Product product, @PathVariable Long id) {
         Optional<Product> optionalProduct = service.findById(id);
@@ -58,6 +85,12 @@ public class ProductController {
         return ResponseEntity.notFound().build();
     }
 
+    /**
+     * Elimina un producto por su id.
+     * 
+     * @param id identificador del producto a eliminar
+     * @return ResponseEntity con el producto eliminado o 404 si no existe
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Product> delete(@PathVariable Long id) {
         Optional<Product> optionalProduct = service.deleteById(id);
